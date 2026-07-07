@@ -1,18 +1,18 @@
 -- Translation support
-local S = minetest.get_translator("multitools")
-local use_toolranks = minetest.get_modpath("toolranks")
-local use_toolranks_extras = minetest.get_modpath("toolranks_extras")
+local S = core.get_translator("multitools")
+local use_toolranks = core.get_modpath("toolranks")
+local use_toolranks_extras = core.get_modpath("toolranks_extras")
 multitools = {}
 
 if use_toolranks_extras and toolranks_extras.register_tool_type then
     toolranks_extras.register_tool_type("multitool", S("multitool"))
 end
 
-if minetest.get_modpath("lavastuff") then
+if core.get_modpath("lavastuff") then
     lavastuff.burn_drops("multitools:multitool_lava")
-elseif minetest.get_modpath("mobs_monster") then
-    local old_handle_node_drops = minetest.handle_node_drops
-    function minetest.handle_node_drops(pos, drops, digger)
+elseif core.get_modpath("mobs_monster") then
+    local old_handle_node_drops = core.handle_node_drops
+    function core.handle_node_drops(pos, drops, digger)
 
             -- are we holding Lava Multitool?
             if digger and digger:get_wielded_item():get_name() ~= ("multitools:multitool_lava") then
@@ -27,7 +27,7 @@ elseif minetest.get_modpath("mobs_monster") then
 
                 -- get cooked output of current drops
                 local stack = ItemStack(drop)
-                local output = minetest.get_craft_result({
+                local output = core.get_craft_result({
                     method = "cooking",
                     width = 1,
                     items = {drop}
@@ -60,7 +60,7 @@ function multitools.register_multitool(modname, material, description, image, ra
         original_desc = description
         desc = toolranks.create_description(description, 0, 1)
     end
-    minetest.register_tool(modname..":multitool_"..material, {
+    core.register_tool(modname..":multitool_"..material, {
         description = desc,
         original_description = original_desc or nil,
         after_use = use_toolranks and toolranks.new_afteruse or nil,
@@ -86,7 +86,7 @@ multitools.register_multitool("multitools", "diamond", S("Diamond Multitool"), "
     {breaks = "default_tool_breaks"}
 )
 
-minetest.register_craft({
+core.register_craft({
     output = "multitools:multitool_diamond",
     recipe = {
         {"", "default:shovel_diamond", ""},
@@ -109,7 +109,7 @@ multitools.register_multitool("multitools", "mese", S("Mese Multitool"), "multit
     {breaks = "default_tool_breaks"}
 )
 
-minetest.register_craft({
+core.register_craft({
     output = "multitools:multitool_mese",
     recipe = {
         {"", "default:shovel_mese", ""},
@@ -117,7 +117,7 @@ minetest.register_craft({
     }
 })
 
-if minetest.get_modpath("moreores") then
+if core.get_modpath("moreores") then
     multitools.register_multitool("multitools", "mithril", S("Mithril Multitool"), "multitool_mithril.png", 8.0,
         {
             full_punch_interval = 0.9,
@@ -133,7 +133,7 @@ if minetest.get_modpath("moreores") then
         {breaks = "default_tool_breaks"}
     )
 
-    minetest.register_craft({
+    core.register_craft({
         output = "multitools:multitool_mithril",
         recipe = {
             {"", "moreores:shovel_mithril", ""},
@@ -142,7 +142,7 @@ if minetest.get_modpath("moreores") then
     })
 end
 
-if minetest.get_modpath("ethereal") then
+if core.get_modpath("ethereal") then
     multitools.register_multitool("multitools", "crystal", S("Crystal Multitool"), "multitool_crystal.png", 8.0,
         {
             full_punch_interval = 0.9,
@@ -159,25 +159,25 @@ if minetest.get_modpath("ethereal") then
     )
 
     -- From Etheral mod
-    local old_handle_node_drops = minetest.handle_node_drops
+    local old_handle_node_drops = core.handle_node_drops
 
-    function minetest.handle_node_drops(pos, drops, digger)
+    function core.handle_node_drops(pos, drops, digger)
 
         -- are we holding Crystal Multitool?
         if digger and digger:get_wielded_item():get_name() ~= "multitools:multitool_crystal" then
             return old_handle_node_drops(pos, drops, digger)
         end
 
-        local nn = minetest.get_node(pos).name
+        local nn = core.get_node(pos).name
 
-        if minetest.get_item_group(nn, "crumbly") == 0 and minetest.get_item_group(nn, "cracky") == 0 then
+        if core.get_item_group(nn, "crumbly") == 0  then
             return old_handle_node_drops(pos, drops, digger)
         end
 
         return old_handle_node_drops(pos, {ItemStack(nn)}, digger)
     end
 
-    minetest.register_craft({
+    core.register_craft({
         output = "multitools:multitool_crystal",
         recipe = {
             {"", "ethereal:shovel_crystal", ""},
@@ -187,9 +187,9 @@ if minetest.get_modpath("ethereal") then
 
 end
 
-if minetest.get_modpath("mobs_monster") or minetest.get_modpath("lavastuff") then
+if core.get_modpath("mobs_monster") or core.get_modpath("lavastuff") then
     local img = "multitool_lava.png"
-    if minetest.get_modpath("lavastuff") then
+    if core.get_modpath("lavastuff") then
         img = "multitool_lavastuff.png"
     end
     multitools.register_multitool("multitools", "lava", S("Lava Multitool"), img, 8.0,
@@ -206,8 +206,8 @@ if minetest.get_modpath("mobs_monster") or minetest.get_modpath("lavastuff") the
         },
         {breaks = "default_tool_breaks"}
     )
-    if not minetest.get_modpath("lavastuff") then
-        minetest.register_craft({
+    if not core.get_modpath("lavastuff") then
+        core.register_craft({
             output = "multitools:multitool_lava",
             recipe = {
                 {"mobs:lava_orb", "mobs:lava_orb", "mobs:lava_orb"},
@@ -216,7 +216,7 @@ if minetest.get_modpath("mobs_monster") or minetest.get_modpath("lavastuff") the
             }
         })
     else
-        minetest.register_craft({
+        core.register_craft({
             output = "multitools:multitool_lava",
             recipe = {
                 {"", "lavastuff:shovel", ""},
